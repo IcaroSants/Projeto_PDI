@@ -1,0 +1,53 @@
+import argparse
+import os
+
+from numpy import dtype
+from src.utils.util_in import load_image
+import matplotlib.pyplot as plt
+import cv2
+import numpy as np
+from src.utils.util_functions import get_width_length, process_image, seg_image
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        '-i', '--input',
+        default=os.environ.get("PATH_IMAGE_SHEET_91"),
+        help='folder path image.'
+    )
+    ap.add_argument(
+        '-o', '--output',
+        default='path',
+        help='Output folder path ....'
+    )
+    args = vars(ap.parse_args())
+
+    img_ori, img_gray, img_g = process_image(path_image=args['input'])
+    img_otsu, img_contours = seg_image(img_g)
+
+    get_width_length(img_otsu)
+
+    # n_line = 1
+    # n_column = 5
+    # plt.subplot(n_line,n_column,1)
+    # plt.imshow(img_ori, cmap="gray")
+    # plt.xticks([]), plt.yticks([])
+    # plt.subplot(n_line,n_column,2)
+    # plt.imshow(img_gray, cmap="gray")
+    # plt.xticks([]), plt.yticks([])
+    # plt.subplot(n_line,n_column,3)
+    # plt.imshow(img_g, cmap="gray")
+    # plt.xticks([]), plt.yticks([])
+    # plt.subplot(n_line,n_column,4)
+    # plt.imshow(img_otsu, cmap="gray")
+    # plt.xticks([]), plt.yticks([])
+    # plt.subplot(n_line,n_column,5)
+    # plt.imshow(img_contours, cmap="gray")
+    # plt.xticks([]), plt.yticks([])
+    # plt.show()
+    
+
+
+if __name__ == "__main__":
+    main()
