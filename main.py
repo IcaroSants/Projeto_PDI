@@ -1,11 +1,16 @@
 import imp
-from src.utils.segmentation import Segmentation
+from typing_extensions import Self
+from src.utils.segmentation import SegmentationAllImages
 import matplotlib.pyplot as plt
 import os
 
-seg = Segmentation(os.path.join("Padrao_Ouro","folha 32.png"))
+diretorio = os.path.join("Imagens","raw")
 
-plt.imshow(seg.__ChanVeseSegmentation__(),cmap='gray')
-plt.show()
+seg = SegmentationAllImages(diretorio)
+all_images = seg.__segmentationAllImages__()
+print(all_images)
+
+"""plt.imshow()
+plt.show()"""
 
 
