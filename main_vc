@@ -26,8 +26,8 @@ def main():
 
     diretorio = os.path.join("Imagens","raw")
 
-    # seg = SegmentationAllImages(diretorio)
-    # all_images = seg.__segmentationAllImages__()
+    seg = SegmentationAllImages(diretorio)
+    all_images = seg.__segmentationAllImages__()
 
 
     # img_ori, img_gray, img_g = process_image(path_image=args['input'])

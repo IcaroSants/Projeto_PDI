@@ -4,6 +4,7 @@ import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import mahotas
 
 class Segmentation():
     def __init__(self,path):
@@ -17,12 +18,6 @@ class Segmentation():
         image = self.__getImage__()
         image_gray = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
         return image_gray
-
-    def __ChanVeseSegmentation__(self):
-        image_gray = self.__getGrayImage__()
-        image_segmentated = chan_vese(image_gray)
-        return image_segmentated
-    
     def preProcessing(self, imageBGR):
         image_channel_green = imageBGR[:,:,1]
         return image_channel_green
@@ -46,27 +41,44 @@ class Segmentation():
         # Retorna imagem com o contorno que possui maior area interna  
         image_segmentated = cv.drawContours(img_zeros, [contours[ind_max_area]], 0, 255, -1)
         image_segmentated[image_segmentated!=0] = 1
-
-
-        # n_line = 1
-        # n_column = 3
-        # plt.subplot(n_line,n_column,1)
-        # plt.imshow(image_channel_green, cmap="gray")
-        # plt.xticks([]), plt.yticks([])
-        # plt.subplot(n_line,n_column,2)
-        # plt.imshow(img_otsu, cmap="gray")
-        # plt.xticks([]), plt.yticks([])
-        # plt.subplot(n_line,n_column,3)
-        # plt.imshow(image_segmentated, cmap="gray")
-        # plt.xticks([]), plt.yticks([])
-        # plt.show()
         
+        return image_segmentated
+    
+    def morphology(self, image_gray):
+        #Passo 2: Blur/Suavização da imagem
+        #suave = cv2.blur(img, (3, 3))
+        suave = cv.GaussianBlur(image_gray, (3, 3), 0)
+
+        # Binarização resultando em pixels brancos e pretos
+        T = mahotas.thresholding.otsu(suave)
+        bin = suave.copy()
+        bin[bin > T] = 255
+        bin[bin < 255] = 0
+        bin = cv.bitwise_not(bin)
+
+        # Operações morfológicas
+        kernel = np.ones((5, 5), np.uint8)
+        img_closing = cv.morphologyEx(bin, cv.MORPH_CLOSE, kernel)
+        img_opening = cv.morphologyEx(img_closing, cv.MORPH_OPEN, kernel)
+        image_segmentated = img_opening
+        image_segmentated[image_segmentated!=0] = 1           
+        
+        return image_segmentated
+
+    def __ChanVeseSegmentation__(self):
+        image_gray = self.__getGrayImage__()
+        image_segmentated = chan_vese(image_gray)
         return image_segmentated
 
     def tecSeg02(self):
         imageBGR = self.__getImage__() #BGR
         image_channel_green = self.preProcessing(imageBGR)
         image_segmentated = self.ContoursAreaSegmentation(image_channel_green)
+        return image_segmentated
+    
+    def tecSeg03(self):
+        image_gray = self.__getGrayImage__()
+        image_segmentated = self.morphology(image_gray)
         return image_segmentated
 
     def __IoU__(self,original):
@@ -105,6 +117,7 @@ class SegmentationAllImages(Segmentation):
             super().__init__(path_image)
             image_segmentaded = super().__ChanVeseSegmentation__()
             # image_segmentaded = super().tecSeg02()
+            # image_segmentaded = super().tecSeg03()
             super().__del__()
 
             info = {}
