@@ -5,12 +5,8 @@ from src.utils.util_in import load_image
 def process_image(path_image):
 
     img_ori = load_image(path_image=path_image, flag_scale=1) #BGR
-    
     img_gray = cv2.cvtColor(img_ori, cv2.COLOR_BGR2GRAY)
-
-    # img_b = img_ori[:,:,0]
     img_g = img_ori[:,:,1]
-    # img_r = img_ori[:,:,2]
 
     return img_ori, img_gray, img_g
 

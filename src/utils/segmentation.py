@@ -13,7 +13,6 @@ class Segmentation():
         image = cv.imread(self.path)
         return image
     
-    
     def __getGrayImage__(self):
         image = self.__getImage__()
         image_gray = cv.cvtColor(image,cv.COLOR_BGR2GRAY)
@@ -22,6 +21,52 @@ class Segmentation():
     def __ChanVeseSegmentation__(self):
         image_gray = self.__getGrayImage__()
         image_segmentated = chan_vese(image_gray)
+        return image_segmentated
+    
+    def preProcessing(self, imageBGR):
+        image_channel_green = imageBGR[:,:,1]
+        return image_channel_green
+    
+    def ContoursAreaSegmentation(self, image_channel_green):
+        ret3,th3 = cv.threshold(image_channel_green,0,255,cv.THRESH_BINARY+cv.THRESH_OTSU)
+        img_otsu = np.array(th3.max()-th3, dtype=np.uint8) # resultado Otsu
+
+        contours, hierarchy = cv.findContours(img_otsu, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+
+        all_areas=[]
+        for cnt in contours:
+            area= cv.contourArea(cnt)
+            all_areas.append(area)
+    
+        # indice do contorno de maior area interna 
+        ind_max_area = all_areas.index(max(all_areas)) 
+
+        img_zeros = np.zeros_like(image_channel_green)
+
+        # Retorna imagem com o contorno que possui maior area interna  
+        image_segmentated = cv.drawContours(img_zeros, [contours[ind_max_area]], 0, 255, -1)
+        image_segmentated[image_segmentated!=0] = 1
+
+
+        # n_line = 1
+        # n_column = 3
+        # plt.subplot(n_line,n_column,1)
+        # plt.imshow(image_channel_green, cmap="gray")
+        # plt.xticks([]), plt.yticks([])
+        # plt.subplot(n_line,n_column,2)
+        # plt.imshow(img_otsu, cmap="gray")
+        # plt.xticks([]), plt.yticks([])
+        # plt.subplot(n_line,n_column,3)
+        # plt.imshow(image_segmentated, cmap="gray")
+        # plt.xticks([]), plt.yticks([])
+        # plt.show()
+        
+        return image_segmentated
+
+    def tecSeg02(self):
+        imageBGR = self.__getImage__() #BGR
+        image_channel_green = self.preProcessing(imageBGR)
+        image_segmentated = self.ContoursAreaSegmentation(image_channel_green)
         return image_segmentated
 
     def __IoU__(self,original):
@@ -59,6 +104,7 @@ class SegmentationAllImages(Segmentation):
         for path_image in all_images:
             super().__init__(path_image)
             image_segmentaded = super().__ChanVeseSegmentation__()
+            # image_segmentaded = super().tecSeg02()
             super().__del__()
 
             info = {}

@@ -1,5 +1,5 @@
-import imp
-from typing_extensions import Self
+# import imp
+# from typing_extensions import Self
 from src.utils.segmentation import SegmentationAllImages
 import matplotlib.pyplot as plt
 import os
