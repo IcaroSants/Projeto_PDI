@@ -37,7 +37,7 @@ for dados in imagens:
     imagem_segmentada = segmentacao.__ChanVeseSegmentation__()
     imagem_segmentada_02 = segmentacao.tecSeg02()
     imagem_segmentada_03 = segmentacao.tecSeg03()
-
+    
     mascara = dados["imagem_ouro"]
 
     iou_seg = metrics.__IoU__(imagem_segmentada,mascara)
@@ -50,13 +50,13 @@ for dados in imagens:
 
 resultado  = [round(np.mean(iou),2)*100,round(np.mean(iou_02),2)*100,round(np.mean(iou_03),2)*100]
 
-print("imagem segmentada:",resultado[0])
-print("imagem segmentada tec 02:",resultado[1])
-print("imagem segmentada tec 03:",resultado[2])
+print("imagem segmentada:",resultado[0], "minimo:",min(iou),"maximo:",max(iou),"desvio padrao:",np.std(iou))
+print("imagem segmentada tec 02:",resultado[1], "minimo:",min(iou_02),"maximo:",max(iou_02),"desvio padrao:",np.std(iou_02))
+print("imagem segmentada tec 03:",resultado[2], "minimo:",min(iou_03),"maximo:",max(iou_03),"desvio padrao:",np.std(iou_03))
 
 
 
-plt.bar(["tec 01","tec 02","tec 03"],resultado,color=["blue","green","red"]) 
+"""plt.bar(["tec 01","tec 02","tec 03"],resultado,color=["blue","green","red"]) 
 plt.title("IoU")
 plt.ylim(0,100)
 plt.ylabel("porcentagem")
@@ -65,4 +65,4 @@ plt.text(0,76,str(int(resultado[0]))+"%")
 plt.text(1,86,str(int(resultado[1]))+"%")
 plt.text(2,90,str(int(resultado[2]))+"%")
 
-plt.show()
+plt.show()"""

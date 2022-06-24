@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import cv2 as cv
+from scipy.spatial import distance
 
 class Metrics():
 
@@ -71,3 +73,20 @@ class Metrics():
             largura = distancia_1
 
         return [comprimento, largura], image_draw_line 
+
+    def area(self,img):
+
+        area = len(np.nonzero(img)[0])
+
+        return area
+
+    
+    def getAllMetrics(self,img):
+        shape, _ = self.measurements(img)
+        
+        all_metrics = {}
+        all_metrics["area"] = self.area(img)
+        all_metrics["comprimento"] = shape[0]
+        all_metrics["largura"] = shape[1]
+
+        return all_metrics

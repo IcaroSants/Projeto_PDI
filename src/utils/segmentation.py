@@ -5,11 +5,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from skimage.filters import threshold_otsu
-from scipy.spatial import distance
+import re
+from .metrics import Metrics
+import pandas as pd
+from matplotlib.pyplot import imsave
 
 class Segmentation():
     def __init__(self,path):
         self.path = path
+        self.metrics = Metrics()
 
     def __getImage__(self):
         image = cv.imread(self.path)
@@ -110,9 +114,9 @@ class SegmentationAllImages(Segmentation):
         all_images_segmented = []
         for path_image in all_images:
             super().__init__(path_image)
-            image_segmentaded = super().__ChanVeseSegmentation__()
-            # image_segmentaded = super().tecSeg02()
-            # image_segmentaded = super().tecSeg03()
+            #image_segmentaded = super().__ChanVeseSegmentation__()
+            #image_segmentaded = super().tecSeg02()
+            image_segmentaded = super().tecSeg03()
             super().__del__()
 
             info = {}
@@ -124,8 +128,53 @@ class SegmentationAllImages(Segmentation):
         return all_images_segmented   
             
 
-   
+    def __getFileName__(self,path):
+        
+            part = path.split(os.sep)
+            ultimo_termo = part[len(part)-1]
+            file = re.sub(".png|.jpeg","",ultimo_termo)
+            return file
+           
 
+
+    def __generateCSV__(self,nome):
+        
+        if os.path.isfile(nome):
+            raise "arquivo ja existe"
+        
+        else:
+            dados = self.__segmentationAllImages__()
+            amostra = []
+            largura = []
+            altura = []
+            area = []
+            for dado in dados:
+                nome_da_amostra = self.__getFileName__(dado['arquivo'])
+                medidas = self.metrics.getAllMetrics(dado['imagem_segmentada'])
+
+                amostra.append(nome_da_amostra)
+                largura.append(medidas['largura'])
+                altura.append(medidas['comprimento'])
+                area.append(medidas['area'])
+            
+            dataframe = pd.DataFrame({"amostra":amostra,"largura":largura,"altura":altura,"area":area})
+            dataframe.to_csv(nome,index=False,index_label=False)
+
+    def __saveImagesSegmented__(self,diretorio):
+
+        if os.path.isdir(diretorio):
+            raise "Diretorio ja existe"
+
+        else:
+            os.mkdir(diretorio)
+            dados = self.__segmentationAllImages__()
+
+            for dado in dados:
+                nome = self.__getFileName__(dado["arquivo"])
+                imagem = dado["imagem_segmentada"] 
+
+                path_for_imgSeg = os.path.join(diretorio,nome)
+                imsave(path_for_imgSeg,imagem,cmap="gray",format="png")
         
     
 
