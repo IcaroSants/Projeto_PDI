@@ -9,16 +9,10 @@
 5. Foto exclusiva de uma folha
 6. Resolução: 224 x 224, 1 mb
 
-=====
-Até 31/5: fazer trailhead e coleta das folhas
-Dia 31/5: 2ª reunião 17h.
-
-
-
+Carlos Estelita
 @IcaroSants
 IcaroSants
-
-
+Pedro Elias
 @LeandroScript
 LeandroScript
 
